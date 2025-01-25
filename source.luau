@@ -2,77 +2,77 @@
 --!nolint UnknownGlobal
 --[[
 
-         ▄▄▄▄███▄▄▄▄      ▄████████         ▄████████    ▄████████    ▄███████▄
-        ▄██▀▀▀███▀▀▀██▄   ███    ███        ███    ███   ███    ███   ███    ███
-        ███   ███   ███   ███    █▀         ███    █▀    ███    █▀    ███    ███
-        ███   ███   ███   ███              ▄███▄▄▄       ███          ███    ███
-        ███   ███   ███ ▀███████████      ▀▀███▀▀▀     ▀███████████ ▀█████████▀
-        ███   ███   ███          ███        ███    █▄           ███   ███
-        ███   ███   ███    ▄█    ███        ███    ███    ▄█    ███   ███
-        ▀█   ███   █▀   ▄████████▀         ██████████  ▄████████▀   ▄████▀
-                                    v2.0.1
+		 ▄▄▄▄███▄▄▄▄      ▄████████         ▄████████    ▄████████    ▄███████▄
+		▄██▀▀▀███▀▀▀██▄   ███    ███        ███    ███   ███    ███   ███    ███
+		███   ███   ███   ███    █▀         ███    █▀    ███    █▀    ███    ███
+		███   ███   ███   ███              ▄███▄▄▄       ███          ███    ███
+		███   ███   ███ ▀███████████      ▀▀███▀▀▀     ▀███████████ ▀█████████▀
+		███   ███   ███          ███        ███    █▄           ███   ███
+		███   ███   ███    ▄█    ███        ███    ███    ▄█    ███   ███
+		▀█   ███   █▀   ▄████████▀         ██████████  ▄████████▀   ▄████▀
+									v2.0.1
 
-                         Created by mstudio45 (Discord)
-                       Contributors: Dottik, Master Oogway
+						 Created by mstudio45 (Discord)
+					   Contributors: Dottik, Master Oogway
 --]]
 
 --[[
-    https://docs.mstudio45.com/
+	https://docs.mstudio45.com/
 
-    ESPLib:Add({
-        Name : string [optional]
+	ESPLib:Add({
+		Name : string [optional]
 
-        Model : Object
-        TextModel : Object [optional]
-        
-        -- General Settings --
-        Visible : boolean [optional]
-        Color : Color3 [default = Color3.new]
-        MaxDistance : number [optional, default = 5000]
-        
-        -- Billboard Settings --
-        StudsOffset : Vector3 [optional]
-        TextSize : number [optional, default = 16]
-        
-        -- Highlighter Settings --
-        ESPType : SphereAdornment | CylinderAdornment | Adornment | SelectionBox | Highlight [default = Highlight]
-        Thickness : number [optional, default = 0.1]
-        Transparency : number [optional, default = 0.65]
+		Model : Object
+		TextModel : Object [optional]
+		
+		-- General Settings --
+		Visible : boolean [optional]
+		Color : Color3 [default = Color3.new]
+		MaxDistance : number [optional, default = 5000]
+		
+		-- Billboard Settings --
+		StudsOffset : Vector3 [optional]
+		TextSize : number [optional, default = 16]
+		
+		-- Highlighter Settings --
+		ESPType : Text | SphereAdornment | CylinderAdornment | Adornment | SelectionBox | Highlight [default = Highlight]
+		Thickness : number [optional, default = 0.1]
+		Transparency : number [optional, default = 0.65]
 
-        -- Note: All Adornment Types use Color and Transparency, no need to add them again to the table 
+		-- Note: All Adornment Types use Color and Transparency, no need to add them again to the table 
 
-        -- SelectionBox (only include when ESPType is SelectionBox) --
-        SurfaceColor : Color3 [default = Color3.new]
-    
-        -- Highlight (only include when ESPType is Highlight) --
-        FillColor : Color3 [default = Color3.new]
-        OutlineColor : Color3 [default = Color3.new(1, 1, 1)]
-    
-        FillTransparency : number [optional, default = 0.65]
-        OutlineTransparency : number [optional, default = 0]
-            
-        -- Tracer Settings --
-        Tracer = {
-            Enabled : boolean [required, default = false]
+		-- SelectionBox (only include when ESPType is SelectionBox) --
+		SurfaceColor : Color3 [default = Color3.new]
+	
+		-- Highlight (only include when ESPType is Highlight) --
+		FillColor : Color3 [default = Color3.new]
+		OutlineColor : Color3 [default = Color3.new(1, 1, 1)]
+	
+		FillTransparency : number [optional, default = 0.65]
+		OutlineTransparency : number [optional, default = 0]
+			
+		-- Tracer Settings --
+		Tracer = {
+			Enabled : boolean [required, default = false]
 
-            Color : Color3 [optional, default = Color3.new]
-            Thickness : number [optional, default = 2]
-            Transparency : number [optional, default = 0] -- Note: Transparency works the opposite way than in Roblox
-            From : Top | Bottom | Center | Mouse [optional, default = Bottom]
-        }
+			Color : Color3 [optional, default = Color3.new]
+			Thickness : number [optional, default = 2]
+			Transparency : number [optional, default = 0] -- Note: Transparency works the opposite way than in Roblox
+			From : Top | Bottom | Center | Mouse [optional, default = Bottom]
+		}
 
-        -- Arrow Settings --
-        Arrow = {
-            Enabled : boolean [required, default = false]
+		-- Arrow Settings --
+		Arrow = {
+			Enabled : boolean [required, default = false]
 
-            Color : Color3 [optional, default = Color3.new]
-            CenterOffset : number [optional, default = 300]
-        }
+			Color : Color3 [optional, default = Color3.new]
+			CenterOffset : number [optional, default = 300]
+		}
 
-        -- OnDestroy Settings --
-        OnDestroy : BindableEvent [optional]
-        OnDestroyFunc : function [optional]
-    })
+		-- OnDestroy Settings --
+		OnDestroy : BindableEvent [optional]
+		OnDestroyFunc : function [optional]
+	})
 --]]
 
 local debug_print = if getgenv().mstudio45_ESP_DEBUG then function(...) print("[mstudio45's ESP]", ...) end else function() end
@@ -110,7 +110,7 @@ export type ESPSettings = {
 	StudsOffset: Vector3?,
 	TextSize: number?,
 
-	ESPType: ("SphereAdornment" | "CylinderAdornment" | "Adornment" | "SelectionBox" | "Highlight")?,
+	ESPType: ("Text" | "SphereAdornment" | "CylinderAdornment" | "Adornment" | "SelectionBox" | "Highlight" |)?,
 	Thickness: number?,
 	Transparency: number?,
 
@@ -266,7 +266,7 @@ local camera: Camera
 local worldToViewport = function(...)
 	camera = (camera or workspace.CurrentCamera);
 
-    if camera == nil then
+	if camera == nil then
 		return Vector2.new(0, 0), false
 	end
 
@@ -341,6 +341,7 @@ local AllowedTracerFrom = {
 }
 
 local AllowedESPType = {
+	text = true,
 	sphereadornment = true,
 	cylinderadornment = true,
 	adornment = true,
@@ -637,7 +638,7 @@ function Library:Add(espSettings: ESPSettings)
 			SurfaceColor3 = ESP.CurrentSettings.SurfaceColor or Color3.new(),
 			SurfaceTransparency = ESP.CurrentSettings.Transparency or 0.65,
 		})
-	else
+	elseif ESP.OriginalSettings.ESPType == "Highlight" then
 		Highlighter = InstancesLib.Create("Highlight", {
 			Parent = StorageFolder,
 			Name = ESP.Index,
@@ -773,7 +774,7 @@ function Library:Add(espSettings: ESPSettings)
 
 	function ESP:Render()
 		if ESP.Deleted then return end
-        if ESP.CurrentSettings.Visible == false or not (rootPart and camera) then
+		if ESP.CurrentSettings.Visible == false or not (rootPart and camera) then
 			Hide()
 			return
 		end
@@ -792,9 +793,9 @@ function Library:Add(espSettings: ESPSettings)
 
 		-- // Update Arrow (only requires distance check) // --
 		if Arrow then
-            Arrow.Visible = Library.GlobalConfig.Arrows == true and ESP.CurrentSettings.Arrow.Enabled == true and (isOnScreen ~= true)
+			Arrow.Visible = Library.GlobalConfig.Arrows == true and ESP.CurrentSettings.Arrow.Enabled == true and (isOnScreen ~= true)
 
-            if Arrow.Visible then
+			if Arrow.Visible then
 				local screenSize = camera.ViewportSize
 				local centerPos = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
 
@@ -855,47 +856,51 @@ function Library:Add(espSettings: ESPSettings)
 		end
 
 		-- // Update Billboard // --
-		Billboard.Enabled = Library.GlobalConfig.Billboards == true;
+		if Billboard then
+			Billboard.Enabled = Library.GlobalConfig.Billboards == true;
 
-		if Billboard.Enabled then
-			if Library.GlobalConfig.Distance then
-				BillboardText.Text = string.format(
-					'%s\n<font size="%d">[%s]</font>',
-					ESP.CurrentSettings.Name,
-					ESP.CurrentSettings.TextSize - 3,
-					math.floor(distanceFromCharacter)
-				)
-			else
-				BillboardText.Text = ESP.CurrentSettings.Name
+			if Billboard.Enabled then
+				if Library.GlobalConfig.Distance then
+					BillboardText.Text = string.format(
+						'%s\n<font size="%d">[%s]</font>',
+						ESP.CurrentSettings.Name,
+						ESP.CurrentSettings.TextSize - 3,
+						math.floor(distanceFromCharacter)
+					)
+				else
+					BillboardText.Text = ESP.CurrentSettings.Name
+				end
+
+				BillboardText.Font = Library.GlobalConfig.Font
+				BillboardText.TextColor3 = Library.GlobalConfig.Rainbow and Library.RainbowColor
+					or ESP.CurrentSettings.Color
+				BillboardText.TextSize = ESP.CurrentSettings.TextSize
 			end
-
-			BillboardText.Font = Library.GlobalConfig.Font
-			BillboardText.TextColor3 = Library.GlobalConfig.Rainbow and Library.RainbowColor
-				or ESP.CurrentSettings.Color
-			BillboardText.TextSize = ESP.CurrentSettings.TextSize
 		end
 
 		-- // Update Highlighter // --
-        Highlighter.Adornee = Library.GlobalConfig.Highlighters == true and ESP.CurrentSettings.Model or nil;
+		if Highlighter then
+			Highlighter.Adornee = Library.GlobalConfig.Highlighters == true and ESP.CurrentSettings.Model or nil;
 
-        if Highlighter.Adornee then
-			if IsAdornment then
-				Highlighter.Color3 = Library.GlobalConfig.Rainbow and Library.RainbowColor or ESP.CurrentSettings.Color
-				Highlighter.Transparency = ESP.CurrentSettings.Transparency
-			elseif ESP.OriginalSettings.ESPType == "selectionbox" then
-				Highlighter.Color3 = Library.GlobalConfig.Rainbow and Library.RainbowColor or ESP.CurrentSettings.Color
-				Highlighter.LineThickness = ESP.CurrentSettings.Thickness
+			if Highlighter.Adornee then
+				if IsAdornment then
+					Highlighter.Color3 = Library.GlobalConfig.Rainbow and Library.RainbowColor or ESP.CurrentSettings.Color
+					Highlighter.Transparency = ESP.CurrentSettings.Transparency
+				elseif ESP.OriginalSettings.ESPType == "selectionbox" then
+					Highlighter.Color3 = Library.GlobalConfig.Rainbow and Library.RainbowColor or ESP.CurrentSettings.Color
+					Highlighter.LineThickness = ESP.CurrentSettings.Thickness
 
-				Highlighter.SurfaceColor3 = ESP.CurrentSettings.SurfaceColor
-				Highlighter.SurfaceTransparency = ESP.CurrentSettings.Transparency
-			else
-				Highlighter.FillColor = Library.GlobalConfig.Rainbow and Library.RainbowColor
-					or ESP.CurrentSettings.FillColor
-				Highlighter.OutlineColor = Library.GlobalConfig.Rainbow and Library.RainbowColor
-					or ESP.CurrentSettings.OutlineColor
+					Highlighter.SurfaceColor3 = ESP.CurrentSettings.SurfaceColor
+					Highlighter.SurfaceTransparency = ESP.CurrentSettings.Transparency
+				else
+					Highlighter.FillColor = Library.GlobalConfig.Rainbow and Library.RainbowColor
+						or ESP.CurrentSettings.FillColor
+					Highlighter.OutlineColor = Library.GlobalConfig.Rainbow and Library.RainbowColor
+						or ESP.CurrentSettings.OutlineColor
 
-				Highlighter.FillTransparency = ESP.CurrentSettings.FillTransparency
-				Highlighter.OutlineTransparency = ESP.CurrentSettings.OutlineTransparency
+					Highlighter.FillTransparency = ESP.CurrentSettings.FillTransparency
+					Highlighter.OutlineTransparency = ESP.CurrentSettings.OutlineTransparency
+				end
 			end
 		end
 	end
