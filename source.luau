@@ -110,7 +110,7 @@ export type ESPSettings = {
 	StudsOffset: Vector3?,
 	TextSize: number?,
 
-	ESPType: ("Text" | "SphereAdornment" | "CylinderAdornment" | "Adornment" | "SelectionBox" | "Highlight" |)?,
+	ESPType: ("Text" | "SphereAdornment" | "CylinderAdornment" | "Adornment" | "SelectionBox" | "Highlight")?,
 	Thickness: number?,
 	Transparency: number?,
 
