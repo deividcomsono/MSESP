@@ -130,6 +130,7 @@ export type ESPSettings = {
 }
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
@@ -169,6 +170,16 @@ do
 	end
 
 	testGui:Destroy()
+end
+
+local function GetPivot(Instance: Bone | Attachment | PVInstance)
+	if Instance.ClassName == "Bone" then
+		return Instance.TransformedWorldCFrame
+	elseif Instance.ClassName == "Attachment" then
+		return Instance.WorldCFrame
+	else
+		return Instance:GetPivot()
+	end
 end
 
 local function RandomString(length: number)
@@ -226,17 +237,22 @@ local InstancesLib = {
 			or instance
 	end,
 
-	DistanceFrom = function(instaceOrPosition, instanceFrom)
-		if not instaceOrPosition or not instanceFrom then
+	DistanceFrom = function(instanceOrPosition, instanceFrom)
+		if not instanceOrPosition or not instanceFrom then
 			return 9e9
 		end
 
-		return instanceFrom and (instanceFrom.Position - (typeof(instaceOrPosition) == "Instance" and instaceOrPosition:GetPivot().Position or instaceOrPosition)).Magnitude or 9e9
+		return instanceFrom and (instanceFrom.CFrame.Position - (typeof(instanceOrPosition) == "Instance" and GetPivot(instanceOrPosition).Position or instanceOrPosition)).Magnitude or 9e9
 	end
 }
 
-local StorageFolder = InstancesLib.Create("Folder", {
+local ActiveFolder = InstancesLib.Create("Folder", {
 	Parent = CoreGui, -- gethui(),
+	Name = RandomString()
+})
+
+local StorageFolder = InstancesLib.Create("Folder", {
+	Parent = ReplicatedStorage, -- gethui(),
 	Name = RandomString()
 })
 
@@ -261,35 +277,12 @@ local BillboardGUI = InstancesLib.Create("ScreenGui", {
 -- // Player Variables // --
 local character: Model
 local rootPart: Part?
-local camera: Camera
-
-local worldToViewport = function(...)
-	camera = (camera or workspace.CurrentCamera);
-
-	if camera == nil then
-		return Vector2.new(0, 0), false
-	end
-
-	return camera:WorldToViewportPoint(...)
-end
-
--- // Functions // --
-local function UpdatePlayerVariables()
-	debug_print("Updating Player Variables...")
-
-	camera = workspace.CurrentCamera
-	character = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait())
-	rootPart =
-		character:FindFirstChild("HumanoidRootPart")
-		or character:FindFirstChild("UpperTorso")
-		or character:FindFirstChild("Torso")
-		or character.PrimaryPart;
-end
-if Players.LocalPlayer.Character then UpdatePlayerVariables(); else task.spawn(UpdatePlayerVariables); end;
+local camera: Camera = workspace.CurrentCamera
 
 -- // Library // --
 local Library = {
 	-- // Storages // --
+	ActiveFolder = ActiveFolder,
 	StorageFolder = StorageFolder,
 	MainGUI = MainGUI,
 	ESP = {},
@@ -297,6 +290,7 @@ local Library = {
 
 	-- // Global Config // --
 	GlobalConfig = {
+		IgnoreCharacter = false,
 		Rainbow = false,
 
 		Billboards = true,
@@ -315,6 +309,31 @@ local Library = {
 	RainbowColor = Color3.new(),
 }
 
+-- // Functions // --
+function worldToViewport(...)
+	camera = (camera or workspace.CurrentCamera);
+
+	if camera == nil then
+		return Vector2.new(0, 0), false
+	end
+
+	return camera:WorldToViewportPoint(...)
+end
+
+local function UpdatePlayerVariables()
+	if Library.GlobalConfig.IgnoreCharacter then return end
+	debug_print("Updating Player Variables...")
+
+	character = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait())
+	rootPart =
+		character:FindFirstChild("HumanoidRootPart")
+		or character:FindFirstChild("UpperTorso")
+		or character:FindFirstChild("Torso")
+		or character.PrimaryPart;
+end
+if Players.LocalPlayer.Character then UpdatePlayerVariables(); end;
+
+--// Library Functions \\--
 function Library:Clear()
 	for _, ESP in pairs(Library.ESP) do
 		if not ESP then continue end
@@ -325,6 +344,7 @@ end
 function Library:Destroy()
 	Library:Clear();
 
+	ActiveFolder:Destroy();
 	StorageFolder:Destroy();
 	MainGUI:Destroy();
 	BillboardGUI:Destroy();
@@ -479,6 +499,7 @@ function Library:Add(espSettings: ESPSettings)
 
 	espSettings.Visible = typeof(espSettings.Visible) == "boolean" and espSettings.Visible or true
 	espSettings.Color = typeof(espSettings.Color) == "Color3" and espSettings.Color or Color3.new()
+	espSettings.MaxDistance = typeof(espSettings.MaxDistance) == "number" and espSettings.MaxDistance or 5000
 
 	espSettings.StudsOffset = typeof(espSettings.StudsOffset) == "Vector3" and espSettings.StudsOffset or Vector3.new()
 	espSettings.TextSize = typeof(espSettings.TextSize) == "number" and espSettings.TextSize or 16
@@ -735,7 +756,10 @@ function Library:Add(espSettings: ESPSettings)
 		ESP.Hidden = false
 
 		Billboard.Enabled = true
-		if Highlighter then Highlighter.Adornee = ESP.CurrentSettings.Model; end
+		if Highlighter then 
+			Highlighter.Adornee = ESP.CurrentSettings.Model
+			Highlighter.Parent = ActiveFolder
+		end
 		if Tracer then Tracer.Visible = true end
 	end
 
@@ -749,8 +773,13 @@ function Library:Add(espSettings: ESPSettings)
 		ESP.Hidden = true
 
 		Billboard.Enabled = false
-		if Highlighter then Highlighter.Adornee = nil; end
-		if Tracer then Tracer.Visible = false end
+		if Highlighter then 
+			Highlighter.Adornee = nil
+			Highlighter.Parent = StorageFolder
+		end
+		if Tracer then 
+			Tracer.Visible = false
+		end
 	end
 
 	function ESP:Show(force: boolean | nil)
@@ -774,7 +803,7 @@ function Library:Add(espSettings: ESPSettings)
 
 	function ESP:Render()
 		if ESP.Deleted then return end
-		if ESP.CurrentSettings.Visible == false or not (rootPart and camera) then
+		if ESP.CurrentSettings.Visible == false or (not Library.GlobalConfig.IgnoreCharacter and rootPart) or not camera then
 			Hide()
 			return
 		end
@@ -784,9 +813,9 @@ function Library:Add(espSettings: ESPSettings)
 			ESP.CurrentSettings.ModelRoot = InstancesLib.FindPrimaryPart(ESP.CurrentSettings.Model)
 		end
 
-		local screenPos, isOnScreen = worldToViewport((ESP.CurrentSettings.ModelRoot or ESP.CurrentSettings.Model):GetPivot().Position)
-		local distanceFromCharacter = InstancesLib.DistanceFrom((ESP.CurrentSettings.ModelRoot or ESP.CurrentSettings.Model), rootPart)
-		if distanceFromCharacter > (ESP.CurrentSettings.MaxDistance or 5000) then
+		local screenPos, isOnScreen = worldToViewport(GetPivot((ESP.CurrentSettings.ModelRoot or ESP.CurrentSettings.Model)).Position)
+		local distanceFromCharacter = InstancesLib.DistanceFrom((ESP.CurrentSettings.ModelRoot or ESP.CurrentSettings.Model), Library.GlobalConfig.IgnoreCharacter and camera or rootPart)
+		if distanceFromCharacter > ESP.CurrentSettings.MaxDistance then
 			Hide()
 			return
 		end
@@ -881,6 +910,7 @@ function Library:Add(espSettings: ESPSettings)
 		-- // Update Highlighter // --
 		if Highlighter then
 			Highlighter.Adornee = Library.GlobalConfig.Highlighters == true and ESP.CurrentSettings.Model or nil;
+			Highlighter.Parent = Highlighter.Adornee ~= nil and ActiveFolder or StorageFolder;
 
 			if Highlighter.Adornee then
 				if IsAdornment then
@@ -924,7 +954,9 @@ function Library:Add(espSettings: ESPSettings)
 end
 
 -- // Update Player Variables // --
-table.insert(Library.Connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(UpdatePlayerVariables))
+table.insert(Library.Connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+	camera = workspace.CurrentCamera
+end))
 table.insert(Library.Connections, Players.LocalPlayer.CharacterAdded:Connect(UpdatePlayerVariables))
 
 -- // Rainbow Handler // --
@@ -946,11 +978,6 @@ end))
 
 -- // Main Handler // --
 table.insert(Library.Connections, RunService.RenderStepped:Connect(function()
-	if not (rootPart and camera) then
-		UpdatePlayerVariables()
-		task.wait()
-	end
-
 	for _, ESP in Library.ESP do
 		if not ESP then continue end
 		if not ESP.CurrentSettings.Model or not ESP.CurrentSettings.Model.Parent then
